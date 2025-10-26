@@ -15,7 +15,11 @@ services:
       - MAX_CONTENT_MB=1024
       # Optional toggles
       - ENABLE_GALLERY=true
+      - GALLERY_SHOW_VIDEOS=true
       - TZ=Europe/Copenhagen
+      # Debug settings
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
     volumes:
       - ./data:/data         # all uploads/archives persist here
     restart: unless-stopped

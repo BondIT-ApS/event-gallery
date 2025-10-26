@@ -11,6 +11,13 @@ class Config:
     MAX_CONTENT_MB = int(os.getenv("MAX_CONTENT_MB", "512"))
     MAX_CONTENT_LENGTH = MAX_CONTENT_MB * 1024 * 1024  # Flask limit
     PERMANENT_SESSION_LIFETIME = timedelta(days=7)
+    
+    # Debug settings
+    DEBUG = os.getenv("DEBUG", "false").lower() == "true"
+    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+    
+    # Gallery settings
+    GALLERY_SHOW_VIDEOS = os.getenv("GALLERY_SHOW_VIDEOS", "false").lower() == "true"
     ALLOWED_EXTENSIONS = {
         # Images
         "jpg","jpeg","png","heic","heif","gif","webp",

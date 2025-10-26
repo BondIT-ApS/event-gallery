@@ -17,12 +17,13 @@
       border-radius: 12px;
       overflow: hidden;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
     }
     .gallery-item:hover {
       transform: translateY(-5px);
       box-shadow: 0 8px 25px rgba(79, 124, 255, 0.3);
     }
-    .gallery-item img { 
+    .gallery-item img, .gallery-item video { 
       width: 100%; 
       height: 200px; 
       object-fit: cover; 
@@ -51,6 +52,53 @@
       margin-bottom: 20px;
       color: var(--muted);
     }
+    
+    /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+    }
+    .modal-content {
+      position: relative;
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+      max-height: 80%;
+      object-fit: contain;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover,
+    .close:focus {
+      color: #bbb;
+      text-decoration: none;
+    }
+    .modal-caption {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+      text-align: center;
+      color: #ccc;
+      padding: 10px 0;
+      height: 150px;
+    }
   </style>
 </head>
 <body>
@@ -63,16 +111,34 @@
         <strong>{{ images|length }}</strong> photos shared by our amazing guests
       </div>
       <div class="gallery-grid">
-        {% for rel in images %}
-          <div class="gallery-item">
-            <a href="{{ url_for('raw', rel=rel) }}" target="_blank">
-              <img loading="lazy" src="{{ url_for('raw', rel=rel) }}" alt="Event photo">
+        {% for item in images %}
+          <div class="gallery-item" onclick="openModal('{{ url_for('raw', rel=item.path) }}', '{{ item.path }}', '{{ item.type }}')">
+            {% if item.type == 'video' %}
+              <video muted>
+                <source src="{{ url_for('raw', rel=item.path) }}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <div class="overlay">
+                🎥 Play Video
+              </div>
+            {% else %}
+              <img loading="lazy" src="{{ url_for('raw', rel=item.path) }}" alt="Event photo">
               <div class="overlay">
                 🔍 View Full Size
               </div>
-            </a>
+            {% endif %}
           </div>
         {% endfor %}
+      </div>
+      
+      <!-- Modal -->
+      <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage" style="display:none;">
+        <video class="modal-content" id="modalVideo" controls style="display:none;">
+          Your browser does not support the video tag.
+        </video>
+        <div class="modal-caption" id="caption"></div>
       </div>
     {% else %}
       <div class="empty-gallery">
@@ -86,5 +152,51 @@
       <p class="hint">💡 Click any photo to view it in full size</p>
     </div>
   </main>
+  
+  <script>
+    function openModal(src, caption, type) {
+      const modal = document.getElementById('imageModal');
+      const modalImage = document.getElementById('modalImage');
+      const modalVideo = document.getElementById('modalVideo');
+      const captionEl = document.getElementById('caption');
+      
+      modal.style.display = 'block';
+      captionEl.innerHTML = caption;
+      
+      if (type === 'video') {
+        modalImage.style.display = 'none';
+        modalVideo.style.display = 'block';
+        modalVideo.src = src;
+      } else {
+        modalVideo.style.display = 'none';
+        modalImage.style.display = 'block';
+        modalImage.src = src;
+      }
+    }
+    
+    function closeModal() {
+      const modal = document.getElementById('imageModal');
+      const modalVideo = document.getElementById('modalVideo');
+      
+      modal.style.display = 'none';
+      modalVideo.pause(); // Pause video when closing
+      modalVideo.src = ''; // Clear video source
+    }
+    
+    // Close modal when clicking outside the image
+    window.onclick = function(event) {
+      const modal = document.getElementById('imageModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+  </script>
 </body>
 </html>

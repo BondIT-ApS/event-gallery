@@ -2,6 +2,7 @@ import os
 import io
 import zipfile
 import secrets
+import logging
 from datetime import datetime
 from pathlib import Path
 from flask import (
@@ -13,6 +14,12 @@ from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Configure logging
+if app.config.get('DEBUG'):
+    logging.basicConfig(level=getattr(logging, app.config.get('LOG_LEVEL', 'INFO')))
+    app.logger.setLevel(getattr(logging, app.config.get('LOG_LEVEL', 'INFO')))
+    app.logger.info("🧱 Event Gallery starting in DEBUG mode")
 
 Path(app.config["UPLOAD_ROOT"]).mkdir(parents=True, exist_ok=True)
 Path(app.config["ARCHIVE_ROOT"]).mkdir(parents=True, exist_ok=True)
@@ -64,15 +71,33 @@ def upload():
         target_dir = Path(app.config["UPLOAD_ROOT"]) / date_dir / guest_name
         target_dir.mkdir(parents=True, exist_ok=True)
 
+        if app.config.get('DEBUG'):
+            app.logger.debug(f"📂 Upload target directory: {target_dir}")
+            app.logger.debug(f"👤 Guest name: {guest_name}")
+            app.logger.debug(f"📁 Files received: {len(files)}")
+
         saved = 0
+        skipped = 0
         for f in files:
             if not f or f.filename == "":
+                skipped += 1
+                if app.config.get('DEBUG'):
+                    app.logger.debug(f"❌ Skipped empty file")
                 continue
             if not Config.allowed(f.filename):
+                skipped += 1
+                if app.config.get('DEBUG'):
+                    app.logger.debug(f"❌ Skipped disallowed file: {f.filename}")
                 continue
             filename = _unique_name(f.filename)
-            f.save(target_dir / filename)
+            file_path = target_dir / filename
+            f.save(file_path)
             saved += 1
+            if app.config.get('DEBUG'):
+                app.logger.debug(f"✅ Saved file: {filename} ({file_path.stat().st_size} bytes)")
+
+        if app.config.get('DEBUG'):
+            app.logger.info(f"📊 Upload summary - Saved: {saved}, Skipped: {skipped}")
 
         if saved:
             flash(f"Uploaded {saved} file(s). Thank you!")
@@ -131,13 +156,34 @@ def gallery():
     # Very simple gallery: list image files (not videos)
     root = Path(app.config["UPLOAD_ROOT"])
     images = []
+    all_files = []
+    
+    if app.config.get('DEBUG'):
+        app.logger.debug(f"🖼️ Scanning gallery directory: {root}")
+    
     for p in sorted(root.rglob("*")):
         if p.is_file():
+            all_files.append(p)
             ext = p.suffix.lower().strip(".")
-            if ext in {"jpg","jpeg","png","gif","webp"}:
-                # Build a lightweight download link; no inline EXIF processing
-                rel = p.relative_to(root)
-                images.append(str(rel))
+            rel = p.relative_to(root)
+            
+            if ext in {"jpg","jpeg","png","gif","webp","heic","heif"}:
+                # Image files
+                images.append({"path": str(rel), "type": "image"})
+                if app.config.get('DEBUG'):
+                    app.logger.debug(f"🖼️ Found image: {rel}")
+            elif ext in {"mp4","mov","hevc","mkv","webm","avi"}:
+                # Video files - include if enabled
+                if app.config.get('GALLERY_SHOW_VIDEOS'):
+                    images.append({"path": str(rel), "type": "video"})
+                    if app.config.get('DEBUG'):
+                        app.logger.debug(f"🎥 Found video (included): {rel}")
+                elif app.config.get('DEBUG'):
+                    app.logger.debug(f"🎥 Found video (excluded): {rel}")
+    
+    if app.config.get('DEBUG'):
+        app.logger.info(f"📊 Gallery stats - Total files: {len(all_files)}, Images in gallery: {len(images)}")
+    
     return render_template("gallery.html", images=images)
 
 @app.route("/raw/<path:rel>")

@@ -12,12 +12,8 @@ permissions:
 jobs:
   # 🏢 Production LEGO Assembly Line
   production-build:
-    name: 🏢 Build Production LEGO Set (${{ matrix.service }})
+    name: 🐳 Build Event Gallery Docker Image
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        service: [backend, frontend]
 
     steps:
       - name: 📎 Get LEGO Instructions (Checkout)
@@ -58,22 +54,17 @@ jobs:
           echo "📅 Year/Month tag: ${YEAR_MONTH_TAG}"
           echo "🔢 Run number: ${PATCH_VERSION}"
 
-      - name: 🔧 Prepare LEGO Pieces (Backend Dependencies)
-        if: matrix.service == 'backend'
-        run: |
-          pip install --upgrade pip
-          pip install -r backend/requirements.txt
-
-      - name: 🏢 Build & Push Semantic Versioned LEGO Set
+      - name: 🏢 Build & Push Event Gallery Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile.${{ matrix.service }}
+          file: ./Dockerfile
           push: true
           tags: |
-            maboni82/nextdns-optimized-analytics-${{ matrix.service }}:latest
-            maboni82/nextdns-optimized-analytics-${{ matrix.service }}:${{ env.version }}
-            maboni82/nextdns-optimized-analytics-${{ matrix.service }}:${{ env.year_month }}
+            maboni82/event-gallery:latest
+            maboni82/event-gallery:${{ env.version }}
+            maboni82/event-gallery:${{ env.year_month }}
           builder: ${{ steps.buildx.outputs.name }}
+          platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max

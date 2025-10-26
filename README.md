@@ -6,11 +6,23 @@
 [![Made in Denmark](https://img.shields.io/badge/made%20in-Denmark%20🇩🇰-red?style=for-the-badge)](https://bondit.dk)
 [![Powered by Coffee](https://img.shields.io/badge/powered%20by-coffee%20☕-brown?style=for-the-badge)](https://bondit.dk)
 
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-event--gallery-blue?logo=docker&style=for-the-badge)](https://hub.docker.com/r/maboni82/event-gallery)
+[![Docker Pulls](https://img.shields.io/docker/pulls/maboni82/event-gallery?style=for-the-badge)](https://hub.docker.com/r/maboni82/event-gallery)
+[![Demo](https://img.shields.io/badge/Live%20Demo-event--gallery.bonde.ninja-green?style=for-the-badge)](https://event-gallery.bonde.ninja)
+
 ## 📸 Building Better Events, One Photo at a Time
 
 Welcome to Event Gallery - where we do for event photo sharing what LEGO did for children's toys: make it more structured, easier to work with, and way more fun to explore! 
 
 Just like building a LEGO masterpiece, we've crafted a solution that assembles event photos into something greater than the sum of its parts. This mobile-friendly, containerized solution provides simple access control, automatic organization, and admin features with precision and elegance. Built with Python/Flask for reliable photo sharing that just works.
+
+## 🌐 Try the Live Demo
+
+**🚀 [https://event-gallery.bonde.ninja](https://event-gallery.bonde.ninja)**
+
+- **Guest Access**: Use code `demo` to test photo uploads
+- **Admin Access**: Use code `admin` to see the control panel
+- **Gallery View**: See how photos are displayed in the public gallery
 
 ## 🚀 Features - The Building Blocks
 
@@ -60,6 +72,24 @@ Just like building a LEGO masterpiece, we've crafted a solution that assembles e
     - **Upload Page**: http://localhost:8080
     - **Admin Panel**: http://localhost:8080/admin
     - **Public Gallery**: http://localhost:8080/gallery (if enabled)
+
+### 🐳 Docker Hub - Pre-built Images
+
+For even easier deployment, use our pre-built Docker images:
+
+```bash
+# Pull the latest image
+docker pull maboni82/event-gallery:latest
+
+# Run with environment variables
+docker run -d -p 8080:8080 \
+  -e EVENT_CODE=your_guest_code \
+  -e ADMIN_CODE=your_admin_code \
+  -v ./data:/data \
+  maboni82/event-gallery:latest
+```
+
+**Available on Docker Hub**: [maboni82/event-gallery](https://hub.docker.com/r/maboni82/event-gallery)
 
 ## 📱 How It Works - Playing with Your Creation
 

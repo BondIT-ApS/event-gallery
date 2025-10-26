@@ -9,7 +9,7 @@
 <body>
   <main class="card">
     <h1>Share Your Moments 📸</h1>
-    <p>Thank you for joining! You can take a photo/video or choose from your gallery - like adding your own LEGO bricks to our collection!</p>
+    <p>Thank you for joining! You can take photos/videos or choose from your device gallery to share with everyone.</p>
     {% with messages = get_flashed_messages() %}
       {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
     {% endwith %}
@@ -21,16 +21,16 @@
       <label for="files">📷 Photos & Videos (you can select multiple)</label>
       <input type="file" name="files" id="files" accept="image/*,video/*" multiple capture="environment" />
 
-      <button type="submit">🚀 Upload Your Memories</button>
+      <button type="submit">🚀 Upload Files</button>
     </form>
 
     <div class="tips">
-      <h3>🧱 Building Tips:</h3>
+      <h3>💡 Upload Tips:</h3>
       <ul>
-        <li>📶 Wi-Fi works best for big videos</li>
-        <li>📱 Use "Take Photo/Video" for instant captures</li>
-        <li>🔄 If upload fails, try fewer files at once</li>
-        <li>✨ All photos are organized automatically by date</li>
+        <li>📆 Wi-Fi works best for large video files</li>
+        <li>📱 Use "Take Photo/Video" for instant capture</li>
+        <li>🔄 If upload fails, try uploading fewer files at once</li>
+        <li>✨ All files are organized automatically by date and name</li>
       </ul>
     </div>
 

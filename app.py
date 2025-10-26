@@ -68,7 +68,7 @@ def upload():
         for f in files:
             if not f or f.filename == "":
                 continue
-            if not app.config["allowed"](f.filename):
+            if not Config.allowed(f.filename):
                 continue
             filename = _unique_name(f.filename)
             f.save(target_dir / filename)

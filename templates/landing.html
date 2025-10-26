@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🧱 Event Gallery</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="card">
+    <h1>Welcome to Event Gallery 📸</h1>
+    <p>Enter the event or admin code to continue - like finding the right LEGO piece to start your build!</p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
+    {% endwith %}
+    <form method="post">
+      <label for="code">Access Code</label>
+      <input type="password" name="code" id="code" placeholder="Enter your event code" required />
+      <button type="submit">Continue Building</button>
+    </form>
+    <p class="hint">🔒 Guest and admin codes provide different access levels</p>
+  </main>
+</body>
+</html>

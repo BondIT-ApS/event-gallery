@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  event-gallery:
+    build: .
+    container_name: event-gallery
+    ports:
+      - "8080:8080"          # change host port if you like
+    environment:
+      # Set your own secrets!
+      - EVENT_CODE=flowers
+      - ADMIN_CODE=champagne  
+      - SECRET_KEY=change-me-please-to-something-secure
+      # Max upload size (Flask limit). Big iPhone videos? Bump this.
+      - MAX_CONTENT_MB=1024
+      # Optional toggles
+      - ENABLE_GALLERY=true
+      - TZ=Europe/Copenhagen
+    volumes:
+      - ./data:/data         # all uploads/archives persist here
+    restart: unless-stopped

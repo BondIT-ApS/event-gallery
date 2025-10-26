@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>📸 Share Your Moments - Event Gallery</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="card">
+    <h1>Share Your Moments 📸</h1>
+    <p>Thank you for joining! You can take a photo/video or choose from your gallery - like adding your own LEGO bricks to our collection!</p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
+    {% endwith %}
+
+    <form method="post" enctype="multipart/form-data">
+      <label for="guest_name">Your name (optional)</label>
+      <input name="guest_name" id="guest_name" placeholder="e.g. Anna & Jonas" />
+
+      <label for="files">📷 Photos & Videos (you can select multiple)</label>
+      <input type="file" name="files" id="files" accept="image/*,video/*" multiple capture="environment" />
+
+      <button type="submit">🚀 Upload Your Memories</button>
+    </form>
+
+    <div class="tips">
+      <h3>🧱 Building Tips:</h3>
+      <ul>
+        <li>📶 Wi-Fi works best for big videos</li>
+        <li>📱 Use "Take Photo/Video" for instant captures</li>
+        <li>🔄 If upload fails, try fewer files at once</li>
+        <li>✨ All photos are organized automatically by date</li>
+      </ul>
+    </div>
+
+    {% if config.ENABLE_GALLERY %}
+      <p class="gallery-link">
+        <a href="{{ url_for('gallery') }}" target="_blank" class="link">🖼️ View Public Gallery</a>
+      </p>
+    {% endif %}
+  </main>
+</body>
+</html>

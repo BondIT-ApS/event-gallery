@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🖼️ Public Gallery - Event Gallery</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <style>
+    .gallery-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+      gap: 15px; 
+      margin-top: 20px;
+    }
+    .gallery-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .gallery-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(79, 124, 255, 0.3);
+    }
+    .gallery-item img { 
+      width: 100%; 
+      height: 200px; 
+      object-fit: cover; 
+      display: block;
+    }
+    .gallery-item .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      font-size: 24px;
+    }
+    .gallery-item:hover .overlay {
+      opacity: 1;
+    }
+    .gallery-stats {
+      text-align: center;
+      margin-bottom: 20px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>🖼️ Event Gallery</h1>
+    <p>Like a LEGO showcase, here are all the beautiful moments captured at this event!</p>
+    
+    {% if images %}
+      <div class="gallery-stats">
+        <strong>{{ images|length }}</strong> photos shared by our amazing guests
+      </div>
+      <div class="gallery-grid">
+        {% for rel in images %}
+          <div class="gallery-item">
+            <a href="{{ url_for('raw', rel=rel) }}" target="_blank">
+              <img loading="lazy" src="{{ url_for('raw', rel=rel) }}" alt="Event photo">
+              <div class="overlay">
+                🔍 View Full Size
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-gallery">
+        <h3>🏗️ Gallery Under Construction</h3>
+        <p>No photos have been shared yet - like a LEGO box waiting to be opened!</p>
+        <p>Check back soon as guests start uploading their memories.</p>
+      </div>
+    {% endif %}
+
+    <div class="gallery-footer">
+      <p class="hint">💡 Click any photo to view it in full size</p>
+    </div>
+  </main>
+</body>
+</html>

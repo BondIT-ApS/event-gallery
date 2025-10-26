@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>🧱 Admin Control Center - Event Gallery</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <main class="card">
+    <h1>🧱 Admin Control Center</h1>
+    <p>Welcome to your LEGO master builder dashboard! Here you can see your collection stats and download everything.</p>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-number">{{ total_files }}</div>
+        <div class="stat-label">📁 Total Files</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ total_gb }}</div>
+        <div class="stat-label">💾 Total Size (GB)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ folders }}</div>
+        <div class="stat-label">📂 Organized Folders</div>
+      </div>
+    </div>
+
+    <div class="admin-actions">
+      <form method="post" action="{{ url_for('download_all') }}">
+        <button type="submit" class="download-btn">📦 Download Everything (ZIP)</button>
+      </form>
+
+      {% if config.ENABLE_GALLERY %}
+        <p class="gallery-link">
+          <a class="link" href="{{ url_for('gallery') }}" target="_blank">🖼️ Open Public Gallery</a>
+        </p>
+      {% endif %}
+
+      <p class="upload-link">
+        <a class="link" href="{{ url_for('upload') }}">📸 Go to Upload Page</a>
+      </p>
+    </div>
+
+    <div class="admin-info">
+      <h3>🏗️ Builder Information:</h3>
+      <ul>
+        <li>All uploads are organized by date and guest name</li>
+        <li>Files are automatically deduplicated with timestamps</li>
+        <li>ZIP downloads include the complete folder structure</li>
+        <li>Gallery shows only image files (videos excluded for performance)</li>
+      </ul>
+    </div>
+  </main>
+</body>
+</html>

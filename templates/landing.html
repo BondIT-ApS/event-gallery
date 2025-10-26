@@ -9,16 +9,16 @@
 <body>
   <main class="card">
     <h1>Welcome to Event Gallery 📸</h1>
-    <p>Enter the event or admin code to continue - like finding the right LEGO piece to start your build!</p>
+    <p>Enter your access code to continue and start sharing your event memories.</p>
     {% with messages = get_flashed_messages() %}
       {% if messages %}<div class="flash">{{ messages[0] }}</div>{% endif %}
     {% endwith %}
     <form method="post">
       <label for="code">Access Code</label>
       <input type="password" name="code" id="code" placeholder="Enter your event code" required />
-      <button type="submit">Continue Building</button>
+      <button type="submit">Continue</button>
     </form>
-    <p class="hint">🔒 Guest and admin codes provide different access levels</p>
+    <p class="hint">🔒 Different codes provide guest or admin access levels</p>
   </main>
 </body>
 </html>

@@ -137,7 +137,7 @@ jobs:
 
       - name: Run Pylint
         run: |
-          pylint *.py --rcfile=.pylintrc
+          pylint ./*.py --rcfile=.pylintrc
 
   # 🔧 GitHub Actions Workflow Linting (parallel)
   lint-workflows:

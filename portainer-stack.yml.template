@@ -1,0 +1,62 @@
+# 🧱 Event Gallery - Portainer Stack Template
+# 
+# This is a template file for Portainer stack deployment.
+# Copy this file to portainer-stack.yml and replace the placeholder values:
+#
+# 1. YOUR_EVENT_CODE_HERE - Code for guests to upload photos
+# 2. YOUR_ADMIN_CODE_HERE - Code for event organizers/admins
+# 3. YOUR_SECRET_KEY_HERE - Flask session encryption key (generate a secure random key)
+# 4. Optional: Adjust MAX_CONTENT_MB, PORT, and other settings as needed
+#
+# IMPORTANT: Never commit the actual portainer-stack.yml file to version control!
+# Only this template should be tracked in git.
+
+services:
+  # 🧱 Event Gallery Flask Application
+  event-gallery:
+    image: maboni82/event-gallery:latest
+    container_name: event-gallery
+    restart: unless-stopped
+    environment:
+      # 🔑 Access Control (REQUIRED)
+      EVENT_CODE: YOUR_EVENT_CODE_HERE
+      ADMIN_CODE: YOUR_ADMIN_CODE_HERE
+      SECRET_KEY: YOUR_SECRET_KEY_HERE
+      
+      # 📱 Upload Configuration
+      MAX_CONTENT_MB: 100
+      MAX_FILE_SIZE: 50MB
+      
+      # 🖼️ Gallery Settings
+      ENABLE_GALLERY: true
+      GALLERY_SHOW_VIDEOS: true
+      
+      # 🌍 Server Configuration
+      PORT: 8080
+      TIMEZONE: Europe/Copenhagen
+      
+      # 🐛 Debug (set to false for production)
+      DEBUG: false
+      
+      # 📁 Storage Configuration (optional - defaults work for most cases)
+      UPLOAD_ROOT: /data/uploads
+      ARCHIVE_ROOT: /data/archives
+    ports:
+      - "8080:8080"
+    volumes:
+      # 💾 Persistent storage for uploaded photos and archives
+      - event_gallery_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  event_gallery_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /path/to/your/event-gallery-data  # Update this path to your desired storage location
+      o: bind

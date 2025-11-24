@@ -24,7 +24,7 @@ jobs:
       lines-changed: ${{ steps.stats.outputs.lines-changed }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -118,7 +118,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -148,7 +148,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install actionlint
         run: |
@@ -205,7 +205,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -238,7 +238,7 @@ jobs:
     
     steps:
       - name: 📎 Get LEGO Security Instructions
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       
       - name: 🛡️ Run Safety CLI to check for vulnerabilities
         uses: pyupio/safety-action@v1
@@ -258,7 +258,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

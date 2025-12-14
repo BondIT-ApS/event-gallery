@@ -213,7 +213,7 @@ def gallery():
 def raw(rel):
     # Serve a single file by relative path (used for gallery)
     root = Path(app.config["UPLOAD_ROOT"]).resolve()
-    
+
     # Security: Sanitize path components to prevent traversal attacks
     # Split the path and sanitize each component
     path_parts = Path(rel).parts
@@ -228,19 +228,19 @@ def raw(rel):
             # If sanitization changes the part, it's suspicious
             abort(404)
         sanitized_parts.append(safe_part)
-    
+
     # Reconstruct the path from sanitized components
     safe_rel = Path(*sanitized_parts) if sanitized_parts else Path()
     abs_path = (root / safe_rel).resolve()
-    
+
     # Ensure resolved path stays under root (defense in depth)
     if not abs_path.is_relative_to(root):
         abort(404)
-    
+
     # Verify the file exists
     if not abs_path.is_file():
         abort(404)
-    
+
     return send_file(abs_path, as_attachment=False)
 
 

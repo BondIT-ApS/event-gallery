@@ -1,6 +1,7 @@
 import zipfile
 import secrets
 import logging
+import time
 from datetime import datetime
 from pathlib import Path
 from flask import (
@@ -13,12 +14,16 @@ from flask import (
     send_file,
     flash,
     abort,
+    jsonify,
 )
 from werkzeug.utils import secure_filename
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Track app start time for uptime monitoring
+APP_START_TIME = time.time()
 
 # Configure logging
 if app.config.get("DEBUG"):
@@ -242,6 +247,94 @@ def raw(rel):
         abort(404)
 
     return send_file(abs_path, as_attachment=False)
+
+
+@app.route("/health/simple", methods=["GET"])
+def health_simple():
+    """Simple health check for basic liveness probes."""
+    return "OK", 200
+
+
+@app.route("/health", methods=["GET"])
+def health_detailed():
+    """Detailed health check with diagnostics and readiness information."""
+    health_status = {
+        "status": "healthy",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "uptime_seconds": round(time.time() - APP_START_TIME, 2),
+        "checks": {},
+    }
+
+    # Check 1: Storage directories accessible
+    try:
+        upload_root = Path(app.config["UPLOAD_ROOT"])
+        archive_root = Path(app.config["ARCHIVE_ROOT"])
+
+        upload_exists = upload_root.exists() and upload_root.is_dir()
+        archive_exists = archive_root.exists() and archive_root.is_dir()
+
+        if upload_exists and archive_exists:
+            health_status["checks"]["storage"] = {
+                "status": "pass",
+                "upload_root": str(upload_root),
+                "archive_root": str(archive_root),
+            }
+        else:
+            health_status["status"] = "degraded"
+            health_status["checks"]["storage"] = {
+                "status": "fail",
+                "error": "Storage directories not accessible",
+                "upload_exists": upload_exists,
+                "archive_exists": archive_exists,
+            }
+    except Exception as e:
+        health_status["status"] = "degraded"
+        health_status["checks"]["storage"] = {
+            "status": "fail",
+            "error": str(e),
+        }
+
+    # Check 2: Configuration validation
+    config_ok = True
+    config_issues = []
+
+    if app.config["SECRET_KEY"] == "dev-insecure-change-me":
+        config_ok = False
+        config_issues.append("Using default SECRET_KEY (insecure)")
+
+    if (
+        app.config["EVENT_CODE"] == "flowers"
+        or app.config["ADMIN_CODE"] == "champagne"
+    ):
+        config_ok = False
+        config_issues.append("Using default access codes (insecure)")
+
+    if config_ok:
+        health_status["checks"]["config"] = {"status": "pass"}
+    else:
+        health_status["status"] = "degraded"
+        health_status["checks"]["config"] = {
+            "status": "warn",
+            "issues": config_issues,
+        }
+
+    # Check 3: Basic app stats
+    try:
+        root = Path(app.config["UPLOAD_ROOT"])
+        total_files = sum(1 for p in root.rglob("*") if p.is_file())
+        health_status["checks"]["stats"] = {
+            "status": "pass",
+            "total_files": total_files,
+        }
+    except Exception as e:
+        health_status["checks"]["stats"] = {
+            "status": "fail",
+            "error": str(e),
+        }
+
+    # Return appropriate HTTP status code
+    http_status = 200 if health_status["status"] == "healthy" else 503
+    return jsonify(health_status), http_status
 
 
 @app.errorhandler(413)

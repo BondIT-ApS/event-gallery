@@ -287,7 +287,7 @@ def health_detailed():
                 "upload_exists": upload_exists,
                 "archive_exists": archive_exists,
             }
-    except Exception as e:
+    except (OSError, ValueError, KeyError) as e:
         health_status["status"] = "degraded"
         health_status["checks"]["storage"] = {
             "status": "fail",
@@ -326,7 +326,7 @@ def health_detailed():
             "status": "pass",
             "total_files": total_files,
         }
-    except Exception as e:
+    except (OSError, ValueError, KeyError) as e:
         health_status["checks"]["stats"] = {
             "status": "fail",
             "error": str(e),

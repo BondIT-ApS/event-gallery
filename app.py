@@ -302,10 +302,7 @@ def health_detailed():
         config_ok = False
         config_issues.append("Using default SECRET_KEY (insecure)")
 
-    if (
-        app.config["EVENT_CODE"] == "flowers"
-        or app.config["ADMIN_CODE"] == "champagne"
-    ):
+    if app.config["EVENT_CODE"] == "flowers" or app.config["ADMIN_CODE"] == "champagne":
         config_ok = False
         config_issues.append("Using default access codes (insecure)")
 

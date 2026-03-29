@@ -223,7 +223,9 @@ jobs:
           bandit -r . -f json -o bandit-report.json -x .git,.github,data || true
 
       - name: Dependency security check
-        run: safety check
+        env:
+          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
+        run: safety scan
 
       - name: Run tests (if any)
         run: |
@@ -249,12 +251,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install safety
-
-      - name: 🔐 Authenticate with Safety API
-        env:
-          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
-        run: |
-          safety auth
 
       - name: 🛡️ Run Safety scan for vulnerabilities
         env:

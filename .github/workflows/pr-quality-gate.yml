@@ -222,11 +222,6 @@ jobs:
         run: |
           bandit -r . -f json -o bandit-report.json -x .git,.github,data || true
 
-      - name: Dependency security check
-        env:
-          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
-        run: safety scan
-
       - name: Run tests (if any)
         run: |
           python -m pytest --cov=. --cov-report=xml || echo "No tests found, skipping"
@@ -242,24 +237,13 @@ jobs:
       - name: 📎 Get LEGO Security Instructions
         uses: actions/checkout@v6
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: 🛡️ Run Safety CLI to check for vulnerabilities
+        uses: pyupio/safety-action@v1
         with:
-          python-version: "3.11"
-
-      - name: Install Safety CLI
-        run: |
-          python -m pip install --upgrade pip
-          pip install safety
-
-      - name: 🛡️ Run Safety scan for vulnerabilities
-        env:
-          SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
-        run: |
-          safety scan --detailed-output
+          api-key: ${{ secrets.SAFETY_API_KEY }}
 
       - name: 🎯 Safety scan completed
-        run: echo "🧱 Safety CLI security scan completed successfully!"
+        run: echo "🧱 Safety Action security scan completed successfully!"
 
   # 🐳 Flask App Build Test
   build-test-app:

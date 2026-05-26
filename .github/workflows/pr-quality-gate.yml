@@ -59,7 +59,7 @@ jobs:
           echo "Detected $LINES_CHANGED lines changed"
 
       - name: 🧱 Post LEGO Building Plan Comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const linesChanged = ${{ steps.stats.outputs.lines-changed }};
@@ -165,7 +165,7 @@ jobs:
 
       - name: Post workflow linting results
         if: failure()
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const comment = `## ❌ GitHub Actions Workflow Linting Failed
@@ -293,7 +293,7 @@ jobs:
 
     steps:
       - name: 🎯 Post Quality Gate Results
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const needs = ${{ toJson(needs) }};
